@@ -42,20 +42,38 @@ X=rand(s1,1)
 #We define n as an auxiliar to be able to run the for from 3 to 1
 n=3
 
-#We define the "sort" function
-function sort(mB, s1, s2, IFsort)
-    for i=1:s1
-        for j=1:s2
-            if(mB[i,i] == 0.0)
-                u=1
-                for u=1:s2
-                    if(mB[i,u]!=0.0)
+#We define the "sort" function, to sort raws if one pivote is 0
+function sort(mB, s1, s2)
+    #a "bool" to knnow if the matrix has been sorted or noy (0 if false, 1 if true)
+    global IFsort
+    for i=1:s1 #raws
+        for j=1:s2 #columns
+            u=1 #auxiliar columns
+            for u=1:s2
+            if(mB[i,i] == 0.0) #we check if some pivot is 0
+                    if(mB[i,u]!=0.0) #if so, we check if in that column there is some number != 0
+                        #we change raws
                         aux=mB[i,:]
                         mB[i,:]=mB[u,:]
                         mB[u,:]=aux
-                        IFsort=1
-                        #println("F",i,"<->", "F",u)
-                        #println()
+                        IFsort=1 #matrix has been sorted
+                        println()
+                        println("F",i,"<->", "F",u) #We print the "operation"
+                        println()
+
+                        #We print the matrix with the changed raws
+                        for i=1:3
+                            global s2
+                            for j=1:s2*2
+                                global A
+
+                                print(mB[i,j], " ")
+                                if (j==s2)
+                                    print("\t| ")
+                                end
+                            end
+                            print("\n")
+                        end
                     end
                 end
             end
@@ -64,7 +82,7 @@ function sort(mB, s1, s2, IFsort)
 end
 
 
-#We print the matrix in the screen
+#We print the matrix A in the screen
 println("A:")
 for i=1:s1
     global s2
@@ -75,6 +93,7 @@ for i=1:s1
     print("\n")
 end
 
+#We print the matrix A|I in the screen
 print("\n")
 println("A|I:")
 for i=1:s1
@@ -91,7 +110,7 @@ for i=1:s1
 end
 print("\n")
 
-#Triangulation start
+#TRIANGULATION STARTS
 #j -> Rows, i -> Columns
 # : -> till the end
 for i=1:s1
@@ -100,12 +119,22 @@ for i=1:s1
         global mB
         global s1
         global num
+        global IFsort
         #We save the element we want to transform to 0 to print it later (when
         #show the resolution steps)
         #the steps that theprogram does to triangulate the matrix
         num=mB[j,i]
 
-        sort(mB, s1, s2, IFsort)
+        #We call "sort" function to sort the raws in case one pivot is 0
+        sort(mB, s1, s2)
+
+        #if the raws are sorted, "i" and "j" are initialized
+        #again in order to do the triangulation again
+        if (IFsort==1)
+            IFsort=0
+            i=1
+            j=i+1
+        end
 
         #If the element that we want to convert in 0 it is not 0, it
         #multiplies the row of the pivot by this one, and the row of the element
@@ -118,11 +147,12 @@ for i=1:s1
 
         #We print the steps and the done operations
         x+=1
-        println("Pas ", x, ": ")
+        println("Step ", x, ": ")
         println("F",j,"= ", mB[i,i], "*F",j," - ", num, "*F",i)
         println()
 
 
+        println("I=",i)
         #We print the steps and the done operations
         for i=1:3
             global s2
@@ -137,15 +167,9 @@ for i=1:s1
             print("\n")
         end
     end
-    global IFsort
-    
-    if (IFsort==1)
-        IFsort=0
-        i=1
-    end
 end
 
-#We triangulate the top triangle
+#TOP TRIANGLE TRIANGULATION STARTS
 #j -> rows, n -> Columns i-> auxiliary of "n"
 # : -> untill the end
 #We use "i" to substract the columns and go from the third to the second one:
@@ -168,10 +192,16 @@ for i=0:s1-2
                     #triangulate the matrix
                     num=mB[j,n]
 
-                    sort(mB, s1,s2, IFsort)
+                    sort(mB, s1,s2)
+
+                    #if the raws are sorted, "i", "n", "k" and "j" are initialized
+                    #again in order to do the triangulation again
                     if(IFsort==1)
                         IFsort=0
                         i=0
+                        n=n-i
+                        k=0
+                        j=n-k-1
                     end
 
                     #If the element that we want to convert to 0 it is not 0,
@@ -185,7 +215,7 @@ for i=0:s1-2
 
                     #We print the steps and done operations
                     x+=1
-                    println("Pas ", x, ": ")
+                    println("Step ", x, ": ")
                     println("F",j,"= ", mB[n,n], "*F",j," - ", num, "*F",n)
                     println()
 
@@ -209,7 +239,7 @@ end
 
 println()
 #We print the triangulated matrix
-println("Resultado Triangulado:")
+println("Result of triangulation:")
 for i=1:s1
     global s2
     for j=1:s2*2
@@ -223,7 +253,7 @@ for i=1:s1
 end
 
 print("\n")
-println("MATRIZ IDENTIDAD|MATRIZ INVERSA:")
+println("IDENTITY MATRIX | INVERSE MATRIX:")
 #We print the matrixI|A^-1 with the done operations
 for i=1:s1
     y=mB[i,i] #"y" saves the pivots ([1,1],[2,2],[3,3])
@@ -240,7 +270,7 @@ for i=1:s1
 end
 
 print("\n")
-println("MATRIZ INVERSA RESULTANTE (A^-1)")
+println("INVERSE MATRIX (A^-1)")
 
 #We split the reverse matrix form the total and save it ina a new variable
 for i=1:s1
