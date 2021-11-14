@@ -4,7 +4,7 @@
 using LinearAlgebra
 using Random
 
-n = 2 # Set the dimension of your matrix
+n = 4 # Set the dimension of your matrix
 A = rand(-10:10, (n,n))
 A = UnitUpperTriangular(A)
 A = A[shuffle(1:end), :]

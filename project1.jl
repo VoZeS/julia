@@ -3,7 +3,7 @@ using LinearAlgebra
 using DelimitedFiles
 
 #File opening and reading matrix and vor together
-A=readdlm("matriu.txt", Float64)
+A=readdlm("matrix_and_vector_input.txt", Float64)
 
 #Reading and saving matrix size
 s=size(A)
@@ -40,7 +40,7 @@ C=rand(s1,s2)
 X=rand(s1,1)
 
 #We define n as an auxiliar to be able to run the for from 3 to 1
-n=3
+n=s1
 
 #We define the "sort" function, to sort raws if one pivote is 0
 function sort(mB, s1, s2)
@@ -62,7 +62,7 @@ function sort(mB, s1, s2)
                         println()
 
                         #We print the matrix with the changed raws
-                        for i=1:3
+                        for i=1:s1
                             global s2
                             for j=1:s2*2
                                 global A
@@ -154,7 +154,7 @@ for i=1:s1
 
         println("I=",i)
         #We print the steps and the done operations
-        for i=1:3
+        for i=1:s1
             global s2
             for j=1:s2*2
                 global A
@@ -297,11 +297,7 @@ end
 
 println()
 #We print the vect in the screen
-println("b:")
-for i=1:s1
-    print(v[i,1], " ")
-    print("\n")
-end
+println("b: ", v)
 
 print("\n")
 println("WE SOLVE Ax=b")
@@ -310,8 +306,5 @@ print("X = (A^-1)*b\n")
 println()
 
 print("X:\n")
-
-for i=1:s1
-    print(X[i,1])
-    print("\n")
-end
+print(X)
+writedlm("solution.txt", X)
